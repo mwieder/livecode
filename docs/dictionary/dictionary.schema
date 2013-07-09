@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="doc">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="legacy_id" type="xs:integer"/>
+      
+      <xs:element name="name" type="xs:string"/>
+    
+      <xs:element name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+              <xs:enumeration value="command"/>
+              <xs:enumeration value="constant"/>
+              <xs:enumeration value="control structure"/>
+              <xs:enumeration value="function"/>
+              <xs:enumeration value="keyword"/>
+              <xs:enumeration value="message"/>
+              <xs:enumeration value="object"/>
+              <xs:enumeration value="operator"/>
+              <xs:enumeration value="property"/> 
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      
+      <xs:element name="syntax">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="example" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="library" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+              <xs:enumeration value="Browser library"/>
+              <xs:enumeration value="Common library"/>
+              <xs:enumeration value="Database library"/>
+              <xs:enumeration value="Font library"/>
+              <xs:enumeration value="Geometry library"/>
+              <xs:enumeration value="Internet library"/>
+              <xs:enumeration value="Printing library"/>
+              <xs:enumeration value="Profile library"/>
+              <xs:enumeration value="Speech library"/> 
+              <xs:enumeration value="SSL library"/> 
+              <xs:enumeration value="Video library"/> 
+              <xs:enumeration value="XML library"/> 
+              <xs:enumeration value="XML-RPC library"/> 
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      
+      <xs:element name="objects">
+        <xs:complexType>
+          <xs:sequence>
+              <xs:element name="androidBrowser" minOccurs="0"/>
+              <xs:element name="androidPlayer" minOccurs="0"/>  
+              <xs:element name="androidScrollbar" minOccurs="0"/>
+              <xs:element name="androidTextInput" minOccurs="0"/> 
+              <xs:element name="button" minOccurs="0"/>
+              <xs:element name="card" minOccurs="0"/>
+              <xs:element name="field" minOccurs="0"/>
+              <xs:element name="graphic" minOccurs="0"/>
+              <xs:element name="group" minOccurs="0"/>
+              <xs:element name="image" minOccurs="0"/>
+              <xs:element name="iosBrowser" minOccurs="0"/>
+              <xs:element name="iosMultiline" minOccurs="0"/> 
+              <xs:element name="iosPlayer" minOccurs="0"/>  
+              <xs:element name="iosScrollbar" minOccurs="0"/>
+              <xs:element name="iosTextInput" minOccurs="0"/>
+              <xs:element name="player" minOccurs="0"/>
+              <xs:element name="scrollbar" minOccurs="0"/>
+              <xs:element name="stack" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="synonyms">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="synonym" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="classification">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="category" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+            <xs:element name="concept" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="references">
+        <xs:complexType>
+          <xs:sequence>
+               <xs:element name="command" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+               
+               <xs:element name="constant" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element> 
+               
+               <xs:element name="controlstructure" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+               
+               <xs:element name="function" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+               
+               <xs:element name="keyword" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+               
+               <xs:element name="message" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+               
+               <xs:element name="object" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+               
+               <xs:element name="operator" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+               
+               <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                  <xs:attribute name="tag" type="xs:string"/>
+                </xs:complexType>
+               </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+     <xs:element name="history">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="introduced">
+            <xs:complexType mixed="true">
+              <xs:attribute name="version" type="xs:decimal"/>
+            </xs:complexType>  
+          </xs:element>
+  
+          <xs:element name="changed" minOccurs="0">
+            <xs:complexType mixed="true">
+              <xs:attribute name="version" type="xs:decimal"/>
+            </xs:complexType>  
+          </xs:element>
+  
+          <xs:element name="deprecated" minOccurs="0">
+            <xs:complexType mixed="true">
+              <xs:attribute name="version" type="xs:decimal"/>
+            </xs:complexType>  
+          </xs:element>
+
+          <xs:element name="removed" minOccurs="0">
+            <xs:complexType mixed="true">
+              <xs:attribute name="version" type="xs:decimal"/>
+            </xs:complexType>  
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>     
+     </xs:element>
+      
+      <xs:element name="platforms">
+        <xs:complexType>
+          <xs:sequence>
+              <xs:element name="android" minOccurs="0"/>
+              <xs:element name="ios" minOccurs="0"/>  
+              <xs:element name="linux" minOccurs="0"/>
+              <xs:element name="mac" minOccurs="0"/> 
+              <xs:element name="windows" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="classes">
+        <xs:complexType>
+          <xs:sequence>
+              <xs:element name="desktop" minOccurs="0"/>
+              <xs:element name="server" minOccurs="0"/>  
+              <xs:element name="web" minOccurs="0"/>
+              <xs:element name="mobile" minOccurs="0"/> 
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="security">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+              <xs:enumeration value="disk"/>
+              <xs:enumeration value="network"/>
+              <xs:enumeration value="printing"/>
+              <xs:enumeration value="process"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+  
+      <xs:element name="summary" type="xs:string"/>
+  
+      <xs:element name="examples">
+        <xs:complexType>
+          <xs:sequence>
+              <xs:element name="example" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+   
+      <xs:element name="description">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:element name="overview" type="xs:string"/>
+            <xs:element name="parameters">
+               <xs:complexType>
+                  <xs:sequence>
+                      <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:sequence>
+                              <xs:element name="name" type="xs:string"/>
+                              <xs:element name="description" type="xs:string"/>
+                              <xs:element name="options">
+                                <xs:complexType>
+                                  <xs:sequence>
+                                      <xs:element name="option">
+                                          <xs:complexType>
+                                            <xs:sequence>
+                                              <xs:element name="item" type="xs:string"/>
+                                              <xs:element name="description" type="xs:string"/>
+                                            </xs:sequence>
+                                          </xs:complexType>
+                                      </xs:element>
+                                  </xs:sequence>
+                                 </xs:complexType>
+                              </xs:element>
+                          </xs:sequence>
+                      </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+          </xs:element>
+          <xs:element name="value" type="xs:string"/>
+          <xs:element name="comments" type="xs:string"/>
+         </xs:sequence>
+        </xs:complexType>
+      </xs:element> 
+    
+    </xs:sequence>  
+  </xs:complexType>
+</xs:element>
+</xs:schema>
