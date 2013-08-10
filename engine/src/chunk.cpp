@@ -1378,7 +1378,9 @@ static int4 countitems(MCExecPoint &ep, const char *sptr, const char *eptr)
 	if (sptr < eptr)
 		do
 		{
-			if (*sptr == ep.getitemdel() && sptr + 1 < eptr)
+// MDW-2013-08-09: [[ number_of_items ]]
+//			if (*sptr == ep.getitemdel() && sptr + 1 < eptr)
+			if (*sptr == ep.getitemdel() )
 				items++;
 		}
 		while (++sptr < eptr);
