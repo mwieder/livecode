@@ -1359,14 +1359,22 @@ Exec_stat MCChunk::extents(MCCRef *ref, int4 &start, int4 &number,
 	return ES_NORMAL;
 }
 
+#define everyDelimiterCounts 1
+
 static int4 countlines(MCExecPoint &ep, const char *sptr, const char *eptr)
 {
 	int4 clines = 1;
 	if (sptr < eptr)
 		do
 		{
-			if (*sptr == ep.getlinedel() && sptr + 1 < eptr)
-				clines++;
+// MDW-2013-08-10: [[ number_of_items ]]
+			if (*sptr == ep.getlinedel() )
+			{
+				if (everyDelimiterCounts)
+					clines++;
+				else if (sptr + 1 < eptr)
+					clines++;
+			}
 		}
 		while (++sptr < eptr);
 	return clines;
@@ -1379,9 +1387,13 @@ static int4 countitems(MCExecPoint &ep, const char *sptr, const char *eptr)
 		do
 		{
 // MDW-2013-08-09: [[ number_of_items ]]
-//			if (*sptr == ep.getitemdel() && sptr + 1 < eptr)
 			if (*sptr == ep.getitemdel() )
-				items++;
+			{
+				if (everyDelimiterCounts)
+					items++;
+				else if (sptr + 1 < eptr)
+					items++;
+			}
 		}
 		while (++sptr < eptr);
 	return items;
