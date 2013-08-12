@@ -57,8 +57,11 @@ class MCExecPoint
 	Boolean useunicode;
 	Boolean deletearray;
 	char itemdel;
+// MDW-2013-08-11: [[ number_of_items ]]
+	char itemsep;
 	char columndel;
 	char linedel;
+	char linesep;
 	char rowdel;
 
 public:
@@ -66,8 +69,11 @@ public:
 	{
 		memset(this, 0, sizeof(MCExecPoint));
 		itemdel = ',';
+// MDW-2013-08-11: [[ number_of_items ]]
+		itemsep = '\0';
 		columndel = '\t';
 		linedel = '\n';
+		linesep = '\0';
 		rowdel = '\n';
 		nffw = 8;
 		nftrailing = 6;
@@ -88,8 +94,11 @@ public:
 		curhlist = hlist;
 		curhandler = handler;
 		itemdel = ',';
+// MDW-2013-08-11: [[ number_of_items ]]
+		itemsep = '\0';
 		columndel = '\t';
 		linedel = '\n';
+		linesep = '\0';
 		rowdel = '\n';
 		nffw = 8;
 		nftrailing = 6;
@@ -341,6 +350,11 @@ public:
 	{
 		return itemdel;
 	}
+// MDW 2013-08-11 [[ number_of_items ]]
+	char getitemsep() const
+	{
+		return itemsep;
+	}
 	char getcolumndel() const
 	{
 		return columndel;
@@ -352,6 +366,10 @@ public:
 	char getlinedel()
 	{
 		return linedel;
+	}
+	char getlinesep()
+	{
+		return linesep;
 	}
 	Boolean getwholematches() const
 	{
@@ -386,8 +404,12 @@ public:
 		return getboolean(useunicode, line, pos, EE_PROPERTY_NAB);
 	}
 	Exec_stat setitemdel(uint2 line, uint2 pos);
+// MDW-2013-08-11: [[ number_of_items ]]
+	Exec_stat setitemsep(uint2 line, uint2 pos);
 	Exec_stat setcolumndel(uint2 line, uint2 pos);
+// MDW-2013-08-11: [[ number_of_items ]]
 	Exec_stat setlinedel(uint2 line, uint2 pos);
+	Exec_stat setlinesep(uint2 line, uint2 pos);
 	Exec_stat setrowdel(uint2 line, uint2 pos);
 	Exec_stat setwholematches(uint2 line, uint2 pos)
 	{

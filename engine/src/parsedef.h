@@ -900,8 +900,12 @@ enum Properties {
     P_CENTURY_CUTOFF,
     P_CONVERT_OCTALS,
     P_ITEM_DELIMITER,
+// MDW-2013-08-09: [[ number_of_items ]] itemseparator
+    P_ITEM_SEPARATOR,
     P_COLUMN_DELIMITER,
     P_LINE_DELIMITER,
+// MDW-2013-08-09: [[ number_of_items ]] itemseparator
+    P_LINE_SEPARATOR,
 	P_ROW_DELIMITER,
     P_NUMBER_FORMAT,
     P_WHOLE_MATCHES,

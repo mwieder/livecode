@@ -291,6 +291,21 @@ Exec_stat MCExecPoint::setitemdel(uint2 l, uint2 p)
 		return ES_ERROR;
 	}
 	itemdel = svalue.getstring()[0];
+	itemsep = '\0';
+	return ES_NORMAL;
+}
+
+// MDW-2013-08-12: [[ number_of_items ]] itemSeparator property
+Exec_stat MCExecPoint::setitemsep(uint2 l, uint2 p)
+{
+	if (tos() != ES_NORMAL || svalue.getlength() != 1)
+	{
+		MCeerror->add
+		(EE_VARIABLE_NAC, l, p, svalue);
+		return ES_ERROR;
+	}
+	itemsep = svalue.getstring()[0];
+	itemdel = itemsep; // set the itemdelimiter at the same time
 	return ES_NORMAL;
 }
 
@@ -327,6 +342,19 @@ Exec_stat MCExecPoint::setlinedel(uint2 l, uint2 p)
 		return ES_ERROR;
 	}
 	linedel = svalue.getstring()[0];
+	return ES_NORMAL;
+}
+
+// MDW-2013-08-12: [[ number_of_items ]] lineSeparator property
+Exec_stat MCExecPoint::setlinesep(uint2 l, uint2 p)
+{
+	if (tos() != ES_NORMAL || svalue.getlength() != 1)
+	{
+		MCeerror->add(EE_VARIABLE_NAC, l, p, svalue);
+		return ES_ERROR;
+	}
+	linesep = svalue.getstring()[0];
+	linedel = linesep; // set the linedelimiter at the same time
 	return ES_NORMAL;
 }
 

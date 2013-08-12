@@ -969,6 +969,8 @@ LT factor_table[] =
         {"itemdelimiter", TT_PROPERTY, P_ITEM_DELIMITER},
         {"itemoffset", TT_FUNCTION, F_ITEM_OFFSET},
         {"items", TT_CLASS, CT_ITEM},
+// MDW-2013-08-12: [[ number_of_items ]] itemSeparator property
+        {"itemseparator", TT_PROPERTY, P_ITEM_SEPARATOR},
 		{"joinstyle", TT_PROPERTY, P_JOIN_STYLE},
         {"jpegquality", TT_PROPERTY, P_JPEG_QUALITY},
         {"keys", TT_FUNCTION, F_KEYS},

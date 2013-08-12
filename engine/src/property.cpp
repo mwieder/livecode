@@ -284,9 +284,13 @@ Parse_stat MCProperty::parse(MCScriptPoint &sp, Boolean the)
 	case P_CENTURY_CUTOFF:
 	case P_CONVERT_OCTALS:
 	case P_ITEM_DELIMITER:
+// MDW-2013-08-12: [[ number_of_items ]] itemSeparator
+	case P_ITEM_SEPARATOR:
 	case P_COLUMN_DELIMITER:
 	case P_ROW_DELIMITER:
 	case P_LINE_DELIMITER:
+// MDW-2013-08-12: [[ number_of_items ]] lineSeparator
+	case P_LINE_SEPARATOR:
 	case P_WHOLE_MATCHES:
 	case P_USE_SYSTEM_DATE:
 	case P_USE_UNICODE:
@@ -842,12 +846,18 @@ Exec_stat MCProperty::set(MCExecPoint &ep)
 		return ep.setconvertoctals(line, pos);
 	case P_ITEM_DELIMITER:
 		return ep.setitemdel(line, pos);
+// MDW-2013-08-12: [[ number_of_items ]] set the itemSeparator
+	case P_ITEM_SEPARATOR:
+		return ep.setitemsep(line, pos);
 	case P_COLUMN_DELIMITER:
 		return ep.setcolumndel(line, pos);
 	case P_ROW_DELIMITER:
 		return ep.setrowdel(line, pos);
 	case P_LINE_DELIMITER:
 		return ep.setlinedel(line, pos);
+// MDW-2013-08-12: [[ number_of_items ]] set the lineSeparator
+	case P_LINE_SEPARATOR:
+		return ep.setlinesep(line, pos);
 	case P_WHOLE_MATCHES:
 		return ep.setwholematches(line, pos);
 	case P_USE_SYSTEM_DATE:
@@ -2760,6 +2770,13 @@ Exec_stat MCProperty::eval(MCExecPoint &ep)
 			ep.copysvalue(&id, 1);
 		}
 		break;
+// MDW-2013-08-12: [[ number_of_items ]] get the itemSeparator
+	case P_ITEM_SEPARATOR:
+		{
+			char id = ep.getitemsep();
+			ep.copysvalue(&id, 1);
+		}
+		break;
 	case P_COLUMN_DELIMITER:
 		{
 			char id = ep.getcolumndel();
@@ -2775,6 +2792,13 @@ Exec_stat MCProperty::eval(MCExecPoint &ep)
 	case P_LINE_DELIMITER:
 		{
 			char id = ep.getlinedel();
+			ep.copysvalue(&id, 1);
+		}
+		break;
+// MDW-2013-08-12: [[ number_of_items ]] get the lineSeparator
+	case P_LINE_SEPARATOR:
+		{
+			char id = ep.getlinesep();
 			ep.copysvalue(&id, 1);
 		}
 		break;

@@ -1367,10 +1367,11 @@ static int4 countlines(MCExecPoint &ep, const char *sptr, const char *eptr)
 	if (sptr < eptr)
 		do
 		{
-// MDW-2013-08-10: [[ number_of_items ]]
+// MDW-2013-08-12: [[ number_of_items ]]
 			if (*sptr == ep.getlinedel() )
 			{
-				if (everyDelimiterCounts)
+				//if (everyDelimiterCounts)
+				if (*sptr == ep.getlinesep())
 					clines++;
 				else if (sptr + 1 < eptr)
 					clines++;
@@ -1386,10 +1387,11 @@ static int4 countitems(MCExecPoint &ep, const char *sptr, const char *eptr)
 	if (sptr < eptr)
 		do
 		{
-// MDW-2013-08-09: [[ number_of_items ]]
+// MDW-2013-08-12: [[ number_of_items ]]
 			if (*sptr == ep.getitemdel() )
 			{
-				if (everyDelimiterCounts)
+//				if (everyDelimiterCounts)
+				if (*sptr == ep.getitemsep())
 					items++;
 				else if (sptr + 1 < eptr)
 					items++;
