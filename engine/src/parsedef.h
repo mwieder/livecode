@@ -1855,6 +1855,8 @@ enum Statements {
     S_PREPARE,
     S_PRINT,
     S_PULLDOWN,
+// MDW-2013-08012: [[ bugfix_3932 ]] "purge stack"
+    S_PURGE,
     S_PUSH,
     S_PUT,
     S_QUIT,

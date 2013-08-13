@@ -194,6 +194,9 @@ MCStatement *MCN_new_statement(int2 which)
 		return new MCPrint;
 	case S_PULLDOWN:
 		return new MCPulldown;
+// MDW-2013-08012: [[ bugfix_3932 ]] "purge stack"
+	case S_PURGE:
+		return new MCDelete;
 	case S_PUSH:
 		return new MCPush;
 	case S_PUT:

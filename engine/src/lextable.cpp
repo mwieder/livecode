@@ -304,6 +304,8 @@ LT command_table[] =
         {"print", TT_STATEMENT, S_PRINT},
 		{"private", TT_STATEMENT, S_SCRIPT_ERROR},
         {"pulldown", TT_STATEMENT, S_PULLDOWN},
+// MDW-2013-08012: [[ bugfix_3932 ]] "purge stack"
+        {"purge", TT_STATEMENT, S_PURGE},
         {"push", TT_STATEMENT, S_PUSH},
         {"put", TT_STATEMENT, S_PUT},
         {"quit", TT_STATEMENT, S_QUIT},
