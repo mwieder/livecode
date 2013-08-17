@@ -208,6 +208,8 @@ public:
 	virtual Exec_stat setprop(uint4 parid, Properties which, MCExecPoint &, Boolean effective);
 
 	virtual Boolean del();
+	virtual Boolean purge();
+	virtual Boolean remove();
 	virtual void paste(void);
 
 	virtual MCStack *getstack();

@@ -1,0 +1,65 @@
+<doc>
+	<legacy_id>2052</legacy_id>
+	<name>purgeStack</name>
+	<type>property</type>
+
+	<syntax>
+		<example>set the purgeStack of <i>stack</i> to {true | false}</example>
+	</syntax>
+
+	<synonyms>
+		<synonym>destroyStack</synonym>
+	</synonyms>
+
+	<summary>Specifies whether a <object tag="stack">stack</object> is purged from memory when it's closed, or whether it remains in memory.</summary>
+
+	<examples>
+<example>set the purgeStack of this stack to true</example>
+	</examples>
+
+	<history>
+		<introduced version="6.2">Added.</introduced>
+		<deprecated version=""></deprecated>
+		<removed version=""></removed>
+		
+		<experimental version=""></experimental>
+		<nonexperimental version=""></nonexperimental>
+	</history>
+
+	<objects>
+		<stack/>
+	</objects>
+
+	<platforms>
+		<mac/>
+		<windows/>
+		<linux/>
+		<ios/>
+		<android/>
+	</platforms>
+
+	<classes>
+		<desktop/>
+		<server/>
+		<web/>
+		<mobile/>
+	</classes>
+
+	<security>
+	</security>
+
+
+	<classification>
+		<category>Objects &amp; Messages</category>
+		<category>Windows &amp; Dialog Boxes</category>
+	</classification>
+
+	<references>
+		<function tag="hasMemory">hasMemory Function</function>
+		<function tag="heapSpace">heapSpace Function</function>
+		<command tag="close">close Command</command>
+		<message tag="reloadStack">reloadStack Message</message>
+	</references>
+
+	<description>Use the <b>purgeStack</b> <glossary tag="property">property</glossary> to leave a <object tag="stack">stack</object> in memory after it is closed.<p></p><p><b>Value:</b></p><p>The <b>purgeStack</b> of a <object tag="stack">stack</object> is true or false.</p><p></p><p>By default, the <b>purgeStack</b> <glossary tag="property">property</glossary> of newly created <function tag="stacks">stacks</function> is set to false.</p><p></p><p><b>Comments:</b></p><p>If a stack's <b>purgeStack</b> <glossary tag="property">property</glossary> is set to true, closing all <function tag="stacks">stacks</function> in its <glossary tag="stack file">stack file</glossary> removes it from memory space, cleaning up after the <object tag="stack">stack</object> and freeing memory for use by the <glossary tag="application">application</glossary>. If any <glossary tag="handler">handlers</glossary> in the stack are running, the stack is not purged from memory until all <glossary tag="handler">handlers</glossary> have completed. (The <object tag="stack">stack</object> is not removed from memory until all <function tag="stacks">stacks</function> in the same <glossary tag="stack file">stack file</glossary> are also closed.)</p><p></p><p>If the <b>purgeStack</b> is false, closing a <glossary tag="stack window">stack's window</glossary> leaves it in memory. If you open and close many <function tag="stacks">stacks</function> in a session, and the <b>purgeStack</b> of all these <function tag="stacks">stacks</function> is false, the memory used by these <function tag="stacks">stacks</function> will continue growing until you quit the <glossary tag="application">application</glossary>. If you reopen the <object tag="stack">stack</object> during the same session, a warning message appears cautioning you that the <object tag="stack">stack</object> is already open.</p><p></p><p>If you close a stack whose <b>purgeStack</b> is true while a <glossary tag="handler">handler</glossary> is running, the <object tag="stack">stack</object> is removed from memory after all running <glossary tag="handler">handlers</glossary> finish <glossary tag="execute">executing</glossary>. This means that if you close and re-open a <object tag="stack">stack</object> during a <glossary tag="handler">handler</glossary>, and the <glossary tag="stack">stack's</glossary> <b>purgeStack</b> is true, the stack is removed from memory (and closed again) after the <glossary tag="handler">handler</glossary> finishes.</p></description>
+</doc>

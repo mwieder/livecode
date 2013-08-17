@@ -2639,6 +2639,114 @@ Boolean MCStack::del()
 	return True;
 }
 
+/*
+ * MCStack::purge()
+ *
+ * purge a mainstack from memory
+ * return False if the target is not a mainstack
+ */
+Boolean MCStack::purge()
+{
+	// MW-2012-10-26: [[ Bug 9918 ]] If 'cantDelete' is set, then don't delete the stack. Also
+	//   make sure we throw an error.
+	if (parent == NULL || scriptdepth != 0 || flags & F_S_CANT_DELETE)
+	{
+		MCeerror->add(EE_OBJECT_CANTREMOVE, 0, 0);
+		return False;
+	}
+	if (MCdispatcher->gethome() == this)
+		return False;
+	
+	if (!MCdispatcher->ismainstack(this))
+	{
+		return False;
+	}
+
+	if (opened)
+	{
+		// MW-2007-04-22: [[ Bug 4203 ]] Coerce the flags to include F_DESTROY_WINDOW to ensure we don't
+		//   get system resource accumulation in a tight create/destroy loop.
+		flags |= F_DESTROY_WINDOW;
+		close();
+	}
+
+	if (curcard != NULL)
+		curcard->message(MCM_delete_stack);
+	else
+		if (cards != NULL)
+			cards->message(MCM_delete_stack);
+	
+	MCdispatcher->removestack(this);
+
+	if (MCstaticdefaultstackptr == this)
+		MCstaticdefaultstackptr = MCtopstackptr;
+	if (MCdefaultstackptr == this)
+		MCdefaultstackptr = MCstaticdefaultstackptr;
+
+	// MW-2008-10-28: [[ ParentScripts ]] If this stack has its 'has parentscripts'
+	//   flag set, flush the parentscripts table.
+	if (getextendedstate(ECS_HAS_PARENTSCRIPTS))
+		MCParentScript::FlushStack(this);
+
+	return True;
+}
+
+/*
+ * MCStack::remove()
+ *
+ * remove a substack from a mainstack
+ * return False if the target is a mainstack
+ */
+Boolean MCStack::remove()
+{
+	// MW-2012-10-26: [[ Bug 9918 ]] If 'cantDelete' is set, then don't delete the stack. Also
+	//   make sure we throw an error.
+	if (parent == NULL || scriptdepth != 0 || flags & F_S_CANT_DELETE)
+	{
+		MCeerror->add(EE_OBJECT_CANTREMOVE, 0, 0);
+		return False;
+	}
+	if (MCdispatcher->gethome() == this)
+		return False;
+	
+	if (MCdispatcher->ismainstack(this))
+	{
+		return False;
+	}
+
+	if (opened)
+	{
+		// MW-2007-04-22: [[ Bug 4203 ]] Coerce the flags to include F_DESTROY_WINDOW to ensure we don't
+		//   get system resource accumulation in a tight create/destroy loop.
+		flags |= F_DESTROY_WINDOW;
+		close();
+	}
+
+	if (curcard != NULL)
+		curcard->message(MCM_delete_stack);
+	else
+		if (cards != NULL)
+			cards->message(MCM_delete_stack);
+	
+	remove(((MCStack *)parent)->substacks);
+	// MW-2012-09-07: [[ Bug 10372 ]] If the stack no longer has substacks then make sure we
+	//   undo the extraopen.
+	if (((MCStack *)parent) -> substacks == NULL)
+		((MCStack *)parent) -> extraclose(true);
+
+	if (MCstaticdefaultstackptr == this)
+		MCstaticdefaultstackptr = MCtopstackptr;
+	if (MCdefaultstackptr == this)
+		MCdefaultstackptr = MCstaticdefaultstackptr;
+
+	// MW-2008-10-28: [[ ParentScripts ]] If this stack has its 'has parentscripts'
+	//   flag set, flush the parentscripts table.
+	if (getextendedstate(ECS_HAS_PARENTSCRIPTS))
+		MCParentScript::FlushStack(this);
+
+	return True;
+}
+
 void MCStack::paste(void)
 {
 	char *t_new_name;

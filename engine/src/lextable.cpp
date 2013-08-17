@@ -1274,7 +1274,9 @@ LT factor_table[] =
         {"properties", TT_PROPERTY, P_PROPERTIES},
         {"propertynames", TT_FUNCTION, F_PROPERTY_NAMES},
         {"proportionalthumbs", TT_PROPERTY, P_PROPORTIONAL_THUMBS},
-        {"qteffects", TT_FUNCTION, F_QT_EFFECTS},
+// MDW-2013-08-16: [[ bugfix_3932 ]] add "purgeStack" synonym for "destroyStack"
+	{"purgestack", TT_PROPERTY, P_DESTROY_STACK},
+       {"qteffects", TT_FUNCTION, F_QT_EFFECTS},
 		{"qtidlerate", TT_PROPERTY, P_QT_IDLE_RATE},
         {"qtversion", TT_FUNCTION, F_QT_VERSION},
         {"queryregistry", TT_FUNCTION, F_QUERY_REGISTRY},

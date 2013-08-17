@@ -1,0 +1,62 @@
+<doc>
+	<legacy_id>2393</legacy_id>
+	<name>remove stack</name>
+	<type>command</type>
+
+	<syntax>
+		<example>remove <i>stack</i></example>
+	</syntax>
+
+	<synonyms>
+		<synonym>clear stack</synonym>
+	</synonyms>
+
+	<summary>Removes a <glossary tag="substack">substack</glossary> from a <glossary tag="stack file">stack file</glossary>.</summary>
+
+	<examples>
+<example>remove stack "Preferences" of stack "Expressions"</example>
+	</examples>
+
+	<history>
+		<introduced version="6.2">Added.</introduced>
+		<deprecated version=""></deprecated>
+		<removed version=""></removed>
+		
+		<experimental version=""></experimental>
+		<nonexperimental version=""></nonexperimental>
+	</history>
+
+	<objects>
+	</objects>
+
+	<platforms>
+		<mac/>
+		<windows/>
+		<linux/>
+		<ios/>
+		<android/>
+	</platforms>
+
+	<classes>
+		<desktop/>
+		<server/>
+		<web/>
+		<mobile/>
+	</classes>
+
+	<security>
+	</security>
+
+
+	<classification>
+		<category>Objects &amp; Messages</category>
+	</classification>
+
+	<references>
+		<command tag="delete">delete Command</command>
+		<property tag="cantDelete">cantDelete Property</property>
+		<message tag="purgeStack">purgeStack Message</message>
+	</references>
+
+	<description>Use the <b>remove stack</b> <glossary tag="command">command</glossary> to delete a <glossary tag="substack">substack from</glossary> a <glossary tag="main stack">main stack</glossary>.<p></p><p><b>Parameters:</b></p><p>The <i>stack</i> is any valid substack reference.</p><p></p><p><b>Comments:</b></p><p></p><p></p><caution>If the <i>stack</i> is a <glossary tag="substack">substack</glossary>, the <b>remove stack </b><glossary tag="command">command</glossary> deletes the <object tag="stack">stack</object> from memory, which causes it to be deleted permanently the next time its <glossary tag="stack file">stack file</glossary> is saved.</caution></description>
+</doc>
