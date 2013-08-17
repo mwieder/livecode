@@ -552,6 +552,40 @@ public:
 	virtual Exec_stat exec(MCExecPoint &);
 };
 
+class MCPurgeStack : public MCDelete
+{
+	MCExpression *file;
+	MCChunk *targets;
+	Boolean directory;
+	Boolean url;
+	MCVarref *var;
+	bool session;
+public:
+	MCPurgeStack()
+	{
+	}
+	virtual ~MCPurgeStack();
+	virtual Parse_stat parse(MCScriptPoint &);
+	virtual Exec_stat exec(MCExecPoint &);
+};
+
+class MCRemoveSubstack : public MCDelete
+{
+	MCExpression *file;
+	MCChunk *targets;
+	Boolean directory;
+	Boolean url;
+	MCVarref *var;
+	bool session;
+public:
+	MCRemoveSubstack()
+	{
+	}
+	virtual ~MCRemoveSubstack();
+	virtual Parse_stat parse(MCScriptPoint &);
+	virtual Exec_stat exec(MCExecPoint &);
+};
+
 class MCChangeProp : public MCStatement
 {
 protected:

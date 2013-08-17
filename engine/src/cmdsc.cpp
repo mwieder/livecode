@@ -1240,6 +1240,123 @@ Exec_stat MCDelete::exec(MCExecPoint &ep)
 	return ES_NORMAL;
 }
 
+// MDW-2013-08-17: [[ bugfix_3932 ]] // purge mainstack
+MCPurgeStack::~MCPurgeStack()
+{
+}
+
+Parse_stat MCPurgeStack::parse(MCScriptPoint &sp)
+{
+	initpoint(sp);
+	Boolean needfile = False;
+	if (sp.skip_token(SP_THERE, TT_UNDEFINED, TM_FILE) == PS_NORMAL)
+		needfile = True;
+	else if (sp.skip_token(SP_THERE, TT_UNDEFINED, TM_DIRECTORY) == PS_NORMAL)
+	{
+		needfile = True;
+		directory = True;
+	}
+	else if (sp.skip_token(SP_THERE, TT_UNDEFINED, TM_URL) == PS_NORMAL)
+	{
+		needfile = True;
+		url = True;
+	}
+	if (needfile)
+	{
+		if (sp.parseexp(False, True, &file) != PS_NORMAL)
+		{
+			MCperror->add
+			(PE_DELETE_BADFILEEXP, sp);
+			return PS_ERROR;
+		}
+	}
+	else
+	{
+		MCScriptPoint oldsp(sp);
+		MCerrorlock++;
+		if (gettargets(sp, &targets, True) != PS_NORMAL)
+		{
+			deletetargets(&targets);
+			sp = oldsp;
+		}
+		MCerrorlock--;
+	}
+	return PS_NORMAL;
+}
+
+Exec_stat MCPurgeStack::exec(MCExecPoint &ep)
+{
+	MCObject *optr;
+	uint4 parid;
+
+	if (targets != NULL)
+	{
+		MCChunk *tptr = targets;
+		while (tptr != NULL)
+		{
+			if (tptr->getobj(ep, optr, parid, True) != ES_NORMAL)
+			{
+				MCeerror -> add(EE_CHUNK_BADOBJECTEXP, line, pos);
+				return ES_ERROR;
+			}
+			if (optr->gettype() == CT_STACK)
+//			if (optr->gettype() == CT_STACK && MCdispatcher->ismainstack((MCStack *)tptr))
+			{
+				if (tptr->del(ep) != ES_NORMAL)
+				{
+					MCeerror->add(EE_DELETE_NOOBJ, line, pos);
+					return ES_ERROR;
+				}
+			}
+			else
+			{
+				MCeerror -> add(EE_CHUNK_BADOBJECTEXP, line, pos);
+				return ES_ERROR;
+			}
+
+			tptr = tptr->next;
+		}
+	}
+	return ES_NORMAL;
+}
+
+// MDW-2013-08-17: [[ bugfix_3932 ]] // remove substack
+MCRemoveSubstack::~MCRemoveSubstack()
+{
+}
+
+Parse_stat MCRemoveSubstack::parse(MCScriptPoint &sp)
+{
+	return PS_NORMAL;
+}
+
+Exec_stat MCRemoveSubstack::exec(MCExecPoint &ep)
+{
+	MCObject *optr;
+	uint4 parid;
+
+	if (targets != NULL)
+
+	{
+		MCChunk *tptr = targets;
+		while (tptr != NULL)
+		{
+			tptr->getobj(ep, optr, parid, True);
+			if (optr->gettype() == CT_STACK && !MCdispatcher->ismainstack((MCStack *)tptr))
+			{
+				if (tptr->del(ep) != ES_NORMAL)
+				{
+					MCeerror->add
+					(EE_DELETE_NOOBJ, line, pos);
+					return ES_ERROR;
+				}
+			}
+			tptr = tptr->next;
+		}
+	}
+	return ES_NORMAL;
+}
+
 MCChangeProp::~MCChangeProp()
 {
 	deletetargets(&targets);
