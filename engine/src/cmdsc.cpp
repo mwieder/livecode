@@ -1240,7 +1240,7 @@ Exec_stat MCDelete::exec(MCExecPoint &ep)
 	return ES_NORMAL;
 }
 
-// MDW-2013-08-17: [[ bugfix_3932 ]] // purge mainstack
+// MDW-2013-08-17: [[ destroyStack ]] // purge mainstack
 MCPurgeStack::~MCPurgeStack()
 {
 }
@@ -1980,7 +1980,7 @@ MCRemove::~MCRemove()
 	delete card;
 }
 
-// MDW-2013-08-18: [[ bugfix_3932 ]] remove stack "foo" from stack "bar"
+// MDW-2013-08-18: [[ destroyStack ]] remove stack "foo" from stack "bar"
 Parse_stat MCRemove::parse(MCScriptPoint &sp)
 {
 	Symbol_type type;
@@ -2056,7 +2056,7 @@ Parse_stat MCRemove::parse(MCScriptPoint &sp)
 	return PS_NORMAL;
 }
 
-// MDW-2013-08-18: [[ bugfix_3932 ]] remove stack "foo" from stack "bar"
+// MDW-2013-08-18: [[ destroyStack ]] remove stack "foo" from stack "bar"
 Exec_stat MCRemove::exec(MCExecPoint &ep)
 {
 	if (all)
@@ -2080,21 +2080,35 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 			MCeerror->add(EE_REMOVE_NOOBJECT, line, pos);
 			return ES_ERROR;
 		}
+		// remove from frontscripts / backscripts
 		if (script)
 			optr->removefrom(where == IP_FRONT ? MCfrontscripts : MCbackscripts);
 		else if (stack)
 		{
+			// resolve reference to mainstack
+			if (card->getobj(ep, cptr, parid, True) != ES_NORMAL)
+			{
+				MCeerror->add(EE_REMOVE_NOOBJECT, line, pos);
+				return ES_ERROR;
+			}
 			// remove stack "foo" from stack "bar"
-			if (optr->gettype() != CT_STACK)
+			if (cptr->gettype() != CT_STACK)
 			{
 				MCeerror->add(PE_REMOVE_NOPLACE, line, pos);
 				return ES_ERROR;
 			}
 			if (optr->gettype() == CT_STACK && !MCdispatcher->ismainstack((MCStack *)optr))
 			{
+				// make sure the substack matches the mainstack
+				if (cptr != optr->getparent())
+				{
+					MCeerror->add(PE_REMOVE_NOPLACE, line, pos);
+					return ES_ERROR;
+				}
+				// try to remove the substack
 				if (target->del(ep) != ES_NORMAL)
 				{
-					// couldn't purge the stack
+					// couldn't remove the substack
 					MCeerror->add(EE_DELETE_NOOBJ, line, pos);
 					return ES_ERROR;
 				}
@@ -2108,6 +2122,7 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 		}
 		else
 		{
+			// remove a group from a card
 			if (optr->gettype() != CT_GROUP)
 			{
 				MCeerror->add(EE_REMOVE_NOTABACKGROUND, line, pos);

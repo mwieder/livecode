@@ -304,7 +304,7 @@ LT command_table[] =
         {"print", TT_STATEMENT, S_PRINT},
 		{"private", TT_STATEMENT, S_SCRIPT_ERROR},
         {"pulldown", TT_STATEMENT, S_PULLDOWN},
-// MDW-2013-08012: [[ bugfix_3932 ]] "purge stack"
+// MDW-2013-08012: [[ destroyStack ]] "purge stack"
         {"purge", TT_STATEMENT, S_PURGE},
         {"push", TT_STATEMENT, S_PUSH},
         {"put", TT_STATEMENT, S_PUT},
@@ -1274,7 +1274,7 @@ LT factor_table[] =
         {"properties", TT_PROPERTY, P_PROPERTIES},
         {"propertynames", TT_FUNCTION, F_PROPERTY_NAMES},
         {"proportionalthumbs", TT_PROPERTY, P_PROPORTIONAL_THUMBS},
-// MDW-2013-08-16: [[ bugfix_3932 ]] add "purgeStack" synonym for "destroyStack"
+// MDW-2013-08-16: [[ destroyStack ]] add "purgeStack" synonym for "destroyStack"
 	{"purgestack", TT_PROPERTY, P_DESTROY_STACK},
        {"qteffects", TT_FUNCTION, F_QT_EFFECTS},
 		{"qtidlerate", TT_PROPERTY, P_QT_IDLE_RATE},

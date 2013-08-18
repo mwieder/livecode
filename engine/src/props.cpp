@@ -68,7 +68,7 @@ static PropList stackprops[] =
         {"name", P_SHORT_NAME},
         {"passkey", P_KEY},
         {"password", P_PASSWORD},
-// MDW-2013-08-16: [[ bugfix_3932 ]] add "purgeStack" synonym for "destroyStack"
+// MDW-2013-08-16: [[ destroyStack ]] add "purgeStack" synonym for "destroyStack"
         {"purgeStack", P_DESTROY_STACK},
         {"rect", P_RECTANGLE},
         {"resizable", P_RESIZABLE},
