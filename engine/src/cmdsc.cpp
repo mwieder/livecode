@@ -1294,63 +1294,29 @@ Exec_stat MCPurgeStack::exec(MCExecPoint &ep)
 		MCChunk *tptr = targets;
 		while (tptr != NULL)
 		{
+			// ensure we can find the specified stack
 			if (tptr->getobj(ep, optr, parid, True) != ES_NORMAL)
 			{
 				MCeerror -> add(EE_CHUNK_BADOBJECTEXP, line, pos);
 				return ES_ERROR;
 			}
-			if (optr->gettype() == CT_STACK)
-//			if (optr->gettype() == CT_STACK && MCdispatcher->ismainstack((MCStack *)tptr))
+			// only allow purging of mainstacks
+			if (optr->gettype() == CT_STACK && MCdispatcher->ismainstack((MCStack *)optr))
 			{
 				if (tptr->del(ep) != ES_NORMAL)
 				{
+					// couldn't purge the mainstack
 					MCeerror->add(EE_DELETE_NOOBJ, line, pos);
 					return ES_ERROR;
 				}
 			}
 			else
 			{
+				// not a mainstack error
 				MCeerror -> add(EE_CHUNK_BADOBJECTEXP, line, pos);
 				return ES_ERROR;
 			}
 
-			tptr = tptr->next;
-		}
-	}
-	return ES_NORMAL;
-}
-
-// MDW-2013-08-17: [[ bugfix_3932 ]] // remove substack
-MCRemoveSubstack::~MCRemoveSubstack()
-{
-}
-
-Parse_stat MCRemoveSubstack::parse(MCScriptPoint &sp)
-{
-	return PS_NORMAL;
-}
-
-Exec_stat MCRemoveSubstack::exec(MCExecPoint &ep)
-{
-	MCObject *optr;
-	uint4 parid;
-
-	if (targets != NULL)
-
-	{
-		MCChunk *tptr = targets;
-		while (tptr != NULL)
-		{
-			tptr->getobj(ep, optr, parid, True);
-			if (optr->gettype() == CT_STACK && !MCdispatcher->ismainstack((MCStack *)tptr))
-			{
-				if (tptr->del(ep) != ES_NORMAL)
-				{
-					MCeerror->add
-					(EE_DELETE_NOOBJ, line, pos);
-					return ES_ERROR;
-				}
-			}
 			tptr = tptr->next;
 		}
 	}
@@ -2014,6 +1980,7 @@ MCRemove::~MCRemove()
 	delete card;
 }
 
+// MDW-2013-08-18: [[ bugfix_3932 ]] remove stack "foo" from stack "bar"
 Parse_stat MCRemove::parse(MCScriptPoint &sp)
 {
 	Symbol_type type;
@@ -2021,6 +1988,7 @@ Parse_stat MCRemove::parse(MCScriptPoint &sp)
 	initpoint(sp);
 
 	sp.skip_token(SP_FACTOR, TT_THE);
+	// "remove script of..."
 	if (sp.skip_token(SP_FACTOR, TT_PROPERTY, P_SCRIPT) == PS_NORMAL)
 	{
 		sp.skip_token(SP_FACTOR, TT_OF);
@@ -2033,12 +2001,18 @@ Parse_stat MCRemove::parse(MCScriptPoint &sp)
 		}
 		script = True;
 	}
-	else
-		if (sp.skip_token(SP_MARK, TT_UNDEFINED, MC_ALL) == PS_NORMAL)
-		{
-			sp.next(type);
-			all = True;
-		}
+	// ""remove all..."
+	else if (sp.skip_token(SP_MARK, TT_UNDEFINED, MC_ALL) == PS_NORMAL)
+	{
+		sp.next(type);
+		all = True;
+	}
+	// "remove stack..."
+	sp.next(type);
+	if (sp.gettoken() == "stack")
+		stack = True;
+	sp.backup();
+	
 	if (script || all)
 	{
 		if (sp.skip_token(SP_FACTOR, TT_FROM) != PS_NORMAL)
@@ -2082,6 +2056,7 @@ Parse_stat MCRemove::parse(MCScriptPoint &sp)
 	return PS_NORMAL;
 }
 
+// MDW-2013-08-18: [[ bugfix_3932 ]] remove stack "foo" from stack "bar"
 Exec_stat MCRemove::exec(MCExecPoint &ep)
 {
 	if (all)
@@ -2098,6 +2073,7 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 	else
 	{
 		MCObject *optr;
+		MCObject *cptr;
 		uint4 parid;
 		if (target->getobj(ep, optr, parid, True) != ES_NORMAL)
 		{
@@ -2106,6 +2082,30 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 		}
 		if (script)
 			optr->removefrom(where == IP_FRONT ? MCfrontscripts : MCbackscripts);
+		else if (stack)
+		{
+			// remove stack "foo" from stack "bar"
+			if (optr->gettype() != CT_STACK)
+			{
+				MCeerror->add(PE_REMOVE_NOPLACE, line, pos);
+				return ES_ERROR;
+			}
+			if (optr->gettype() == CT_STACK && !MCdispatcher->ismainstack((MCStack *)optr))
+			{
+				if (target->del(ep) != ES_NORMAL)
+				{
+					// couldn't purge the stack
+					MCeerror->add(EE_DELETE_NOOBJ, line, pos);
+					return ES_ERROR;
+				}
+			}
+			else
+			{
+				// can't remove a mainstack error
+				MCeerror -> add(EE_CHUNK_BADOBJECTEXP, line, pos);
+				return ES_ERROR;
+			}
+		}
 		else
 		{
 			if (optr->gettype() != CT_GROUP)
@@ -2122,25 +2122,28 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 				return ES_ERROR;
 			}
 
-			MCObject *cptr;
 			if (card->getobj(ep, cptr, parid, True) != ES_NORMAL)
 			{
 				MCeerror->add(EE_REMOVE_NOOBJECT, line, pos);
 				return ES_ERROR;
 			}
 
-			if (cptr->gettype() != CT_CARD)
+			switch (cptr->gettype())
 			{
-				MCeerror->add(EE_REMOVE_NOTACARD, line, pos);
-				return ES_ERROR;
+				case CT_CARD:
+				{
+					MCCard *cardptr = (MCCard *)cptr;
+					cardptr->removecontrol((MCControl *)optr, True, True);
+
+					// MW-2011-08-09: [[ Groups ]] Removing a group from a card implicitly
+					//   makes it shared (rather than a background).
+					optr -> setflag(True, F_GROUP_SHARED);
+					break;
+				}
+				default:
+					MCeerror->add(EE_REMOVE_NOTACARD, line, pos);
+					return ES_ERROR;
 			}
-
-			MCCard *cardptr = (MCCard *)cptr;
-			cardptr->removecontrol((MCControl *)optr, True, True);
-
-			// MW-2011-08-09: [[ Groups ]] Removing a group from a card implicitly
-			//   makes it shared (rather than a background).
-			optr -> setflag(True, F_GROUP_SHARED);
 		}
 	}
 	return ES_NORMAL;

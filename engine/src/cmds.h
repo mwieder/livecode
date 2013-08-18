@@ -569,23 +569,6 @@ public:
 	virtual Exec_stat exec(MCExecPoint &);
 };
 
-class MCRemoveSubstack : public MCDelete
-{
-	MCExpression *file;
-	MCChunk *targets;
-	Boolean directory;
-	Boolean url;
-	MCVarref *var;
-	bool session;
-public:
-	MCRemoveSubstack()
-	{
-	}
-	virtual ~MCRemoveSubstack();
-	virtual Parse_stat parse(MCScriptPoint &);
-	virtual Exec_stat exec(MCExecPoint &);
-};
-
 class MCChangeProp : public MCStatement
 {
 protected:
@@ -793,6 +776,7 @@ class MCRemove : public MCStatement
 {
 	MCChunk *target;
 	MCChunk *card;
+	Boolean stack;
 	Boolean script;
 	Boolean all;
 	Insert_point where;
@@ -801,6 +785,7 @@ public:
 	{
 		target = NULL;
 		card = NULL;
+		stack = NULL;
 		script = all = False;
 	}
 	virtual ~MCRemove();
