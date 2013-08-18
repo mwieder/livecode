@@ -4,17 +4,16 @@
 	<type>command</type>
 
 	<syntax>
-		<example>remove <i>stack</i></example>
+		<example>remove <i>substack</i> from <i>stack</i></example>
 	</syntax>
 
 	<synonyms>
-		<synonym>clear stack</synonym>
 	</synonyms>
 
-	<summary>Removes a <glossary tag="substack">substack</glossary> from a <glossary tag="stack file">stack file</glossary>.</summary>
+	<summary>Removes a <glossary tag="substack">substack</glossary> from a <glossary tag="stack file">stack in memory</glossary>.</summary>
 
 	<examples>
-<example>remove stack "Preferences" of stack "Expressions"</example>
+<example>remove stack "Preferences" from stack "Expressions"</example>
 	</examples>
 
 	<history>
@@ -54,9 +53,12 @@
 
 	<references>
 		<command tag="delete">delete Command</command>
+		<command tag="remove">remove group from card</command>
+		<command tag="purge">purge stack from memory</command>
 		<property tag="cantDelete">cantDelete Property</property>
-		<message tag="purgeStack">purgeStack Message</message>
+		<property tag="purgeStack">purgeStack Property</property>
+		<message tag=""></message>
 	</references>
 
-	<description>Use the <b>remove stack</b> <glossary tag="command">command</glossary> to delete a <glossary tag="substack">substack from</glossary> a <glossary tag="main stack">main stack</glossary>.<p></p><p><b>Parameters:</b></p><p>The <i>stack</i> is any valid substack reference.</p><p></p><p><b>Comments:</b></p><p></p><p></p><caution>If the <i>stack</i> is a <glossary tag="substack">substack</glossary>, the <b>remove stack </b><glossary tag="command">command</glossary> deletes the <object tag="stack">stack</object> from memory, which causes it to be deleted permanently the next time its <glossary tag="stack file">stack file</glossary> is saved.</caution></description>
+	<description>Use the <b>remove stack</b> <glossary tag="command">command</glossary> to delete a <glossary tag="substack">substack from</glossary> a <glossary tag="main stack">main stack in memory</glossary>. When the stack is saved, the substack will no longer be a part of the stack file.<p></p><p><b>Parameters:</b></p><p></p><p>The <i>substack</i> is any valid substack reference, <i>stack</i> is any valid mainstack reference.</p><p></p><p><b>Comments:</b></p></description>
 </doc>
