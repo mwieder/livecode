@@ -2074,7 +2074,7 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 	{
 		MCObject *optr;
 		MCObject *cptr;
-		uint4 parid;
+		uint4 parid, cdid;
 		if (target->getobj(ep, optr, parid, True) != ES_NORMAL)
 		{
 			MCeerror->add(EE_REMOVE_NOOBJECT, line, pos);
@@ -2086,7 +2086,7 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 		else if (stack)
 		{
 			// resolve reference to mainstack
-			if (card->getobj(ep, cptr, parid, True) != ES_NORMAL)
+			if (card->getobj(ep, cptr, cdid, True) != ES_NORMAL)
 			{
 				MCeerror->add(EE_REMOVE_NOOBJECT, line, pos);
 				return ES_ERROR;
@@ -2100,18 +2100,31 @@ Exec_stat MCRemove::exec(MCExecPoint &ep)
 			if (optr->gettype() == CT_STACK && !MCdispatcher->ismainstack((MCStack *)optr))
 			{
 				// make sure the substack matches the mainstack
+				// otherwise we could be removing a substack from a different mainstack
 				if (cptr != optr->getparent())
 				{
 					MCeerror->add(PE_REMOVE_NOPLACE, line, pos);
 					return ES_ERROR;
 				}
+				// get the substack's name
+				MCNameRef tName = optr->getname();
+				// clone the substack into a mainstack
+				cptr = ((MCStack *)optr)->clone();
 				// try to remove the substack
-				if (target->del(ep) != ES_NORMAL)
+				((MCStack *)optr)->remove();
+				// set the new mainstack's name to the old name
+				cptr->setname(tName);
+				
+				// manage the mainstack's list of substacks
+				if (!MCdispatcher->ismainstack((MCStack *)cptr))
 				{
 					// couldn't remove the substack
 					MCeerror->add(EE_DELETE_NOOBJ, line, pos);
 					return ES_ERROR;
 				}
+				// update the display : how do you refresh the App Browser?
+				MCmainstackschanged = True;
+				
 			}
 			else
 			{
