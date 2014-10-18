@@ -1310,7 +1310,9 @@ Boolean MCButton::mup(uint2 which, bool p_release)
 			        && MCeventtime - clicktime < OPTION_TIME)
 				return True;
 			else
-				if (menumode == WM_PULLDOWN && MCU_point_in_rect(rect, mx, my))
+                // SN-2014-10-02: [[ Bug 13539 ]] Only consider the mouse location if we are
+                //   sure that the coordinates are related to the stack, not the pulldown menu
+				if (menumode == WM_PULLDOWN && MCmousestackptr == getstack() && MCU_point_in_rect(rect, mx, my))
 				{
 					if (state & CS_MOUSE_UP_MENU)
 					{
@@ -4181,15 +4183,25 @@ uint2 MCButton::getmousetab(int2 &curx)
 		/* UNCHECKED */ MCArrayFetchValueAtIndex(tabs, i + 1, t_tabval);
 		MCStringRef t_tab;
 		t_tab = (MCStringRef)t_tabval;
+        
+        // AL-2014-09-24: [[ Bug 13528 ]] Measure disabled tab text correctly
+        MCRange t_range;
+        t_range = MCRangeMake(0, MCStringGetLength(t_tab));
+        if (MCStringGetCharAtIndex(t_tab, t_range.offset) == '(')
+        {
+            t_range.offset++;
+            t_range.length--;
+        }
+        
         // MM-2014-04-16: [[ Bug 11964 ]] Pass through the transform of the stack to make sure the measurment is correct for scaled text.
 		if (MCcurtheme)
-            tx += MCFontMeasureText(m_font, t_tab, getstack() -> getdevicetransform()) + tabrightmargin + tableftmargin - taboverlap;
+            tx += MCFontMeasureTextSubstring(m_font, t_tab, t_range, getstack() -> getdevicetransform()) + tabrightmargin + tableftmargin - taboverlap;
 		else
 		{
 			if (IsMacLF())
-                tx += MCFontMeasureText(m_font, t_tab, getstack() -> getdevicetransform()) + theight * 2 / 3 + 7;
+                tx += MCFontMeasureTextSubstring(m_font, t_tab, t_range, getstack() -> getdevicetransform()) + theight * 2 / 3 + 7;
 			else
-                tx += MCFontMeasureText(m_font, t_tab, getstack() -> getdevicetransform()) + 12;
+                tx += MCFontMeasureTextSubstring(m_font, t_tab, t_range, getstack() -> getdevicetransform()) + 12;
 
 		}
 		if (mx < tx)

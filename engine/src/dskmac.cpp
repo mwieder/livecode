@@ -155,7 +155,8 @@ static void getosacomponents();
 static OSErr osacompile(MCStringRef s, ComponentInstance compinstance, OSAID &id);
 static OSErr osaexecute(MCStringRef& r_string,ComponentInstance compinstance, OSAID id);
 
-static bool fetch_ae_as_fsref_list(char*& string, uint4& length);
+// SN-2014-10-07: [[ Bug 13587 ]] Update to return an MCList
+static bool fetch_ae_as_fsref_list(MCListRef &r_list);
 
 /***************************************************************************/
 
@@ -533,6 +534,7 @@ static sysfolders sysfolderlist[] = {
     // MW-2007-09-11: Added for uniformity across platforms
     {&MCN_documents, 'docs', kUserDomain, 'docs'},
     // MW-2007-10-08: [[ Bug 10277 ] Add support for the 'application support' at user level.
+    // FG-2014-09-26: [[ Bug 13523 ]] This entry must not match a request for "asup"
     {&MCN_support, 0, kUserDomain, 'asup'},
 };
 
@@ -3817,11 +3819,12 @@ struct MCMacSystemService: public MCMacSystemServiceInterface//, public MCMacDes
                     // we get a bad URL!
                     if (MCmajorosversion >= 0x1060)
                     {
-                        char *string = nil;
-                        uint4 length = 0;
-                        if (fetch_ae_as_fsref_list(string, length))
+                        // SN-2014-10-07: [[ Bug 13587 ]] fetch_as_as_fsref_list updated to return an MCList
+                        MCAutoListRef t_list;
+                        
+                        if (fetch_ae_as_fsref_list(&t_list))
                         {
-                            /* UNCHECKED */ MCStringCreateWithCStringAndRelease((char_t*)string, r_value);
+                            /* UNCHECKED */ MCListCopyAsString(*t_list, r_value);
                             return;
                         }
                     }
@@ -3834,10 +3837,10 @@ struct MCMacSystemService: public MCMacSystemServiceInterface//, public MCMacDes
                     }
                     else
                     {
-                        char *string = nil;
-                        uint4 length = 0;
-                        if (fetch_ae_as_fsref_list(string, length))
-                            /* UNCHECKED */ MCStringCreateWithCStringAndRelease((char_t*)string, r_value);
+                        // SN-2014-10-07: [[ Bug 13587 ]] fetch_ae_as_frsef_list updated to return an MCList
+                        MCAutoListRef t_list;
+                        if (fetch_ae_as_fsref_list(&t_list))
+                            /* UNCHECKED */ MCListCopyAsString(*t_list, r_value);
                         else
                             /* UNCHECKED */ MCStringCreateWithCString("file list error", r_value);
                     }
@@ -5472,31 +5475,42 @@ struct MCMacDesktop: public MCSystemInterface, public MCMacSystemService
             t_found_folder = false;
             
             uint4 t_mac_folder;
+            t_mac_folder = 0;
             if (p_context . getsvalue() . getlength() == 4)
             {
                 memcpy(&t_mac_folder, p_context . getsvalue() . getstring(), 4);
                 t_mac_folder = MCSwapInt32NetworkToHost(t_mac_folder);
             }
-            else
+            else if (p_context . getsvalue() == "engine")
+            {
+                extern char *MCcmd;
+                char* t_folder;
+                t_folder_path = my_strndup(MCcmd, strrchr(MCcmd, '/') - MCcmd);
+
                 t_mac_folder = 0;
+                t_found_folder = true;
+            }
 			
             OSErr t_os_error;
             uint2 t_i;
-            for (t_i = 0 ; t_i < ELEMENTS(sysfolderlist); t_i++)
-                if (p_context . getsvalue() == sysfolderlist[t_i] . token || t_mac_folder == sysfolderlist[t_i] . macfolder)
-                {
-                    Boolean t_create_folder;
-                    t_create_folder = sysfolderlist[t_i] . domain == kUserDomain ? kCreateFolder : kDontCreateFolder;
-                    
-                    // MW-2012-10-10: [[ Bug 10453 ]] Use the 'mactag' field for the folder id as macfolder can be
-                    //   zero.
-                    t_os_error = FSFindFolder(sysfolderlist[t_i] . domain, sysfolderlist[t_i] . mactag, t_create_folder, &t_folder_ref);
-                    if (t_os_error == noErr)
+            if (!t_found_folder)
+            {
+                for (t_i = 0 ; t_i < ELEMENTS(sysfolderlist); t_i++)
+                    if (p_context . getsvalue() == sysfolderlist[t_i] . token || t_mac_folder == sysfolderlist[t_i] . macfolder)
                     {
-                        t_found_folder = true;
-                        break;
+                        Boolean t_create_folder;
+                        t_create_folder = sysfolderlist[t_i] . domain == kUserDomain ? kCreateFolder : kDontCreateFolder;
+
+                        // MW-2012-10-10: [[ Bug 10453 ]] Use the 'mactag' field for the folder id as macfolder can be
+                        //   zero.
+                        t_os_error = FSFindFolder(sysfolderlist[t_i] . domain, sysfolderlist[t_i] . mactag, t_create_folder, &t_folder_ref);
+                        if (t_os_error == noErr)
+                        {
+                            t_found_folder = true;
+                            break;
+                        }
                     }
-                }
+            }
             
             if (!t_found_folder && p_context . getsvalue() . getlength() == 4)
             {
@@ -5509,16 +5523,16 @@ struct MCMacDesktop: public MCSystemInterface, public MCMacSystemService
             if (!t_found_folder)
                 t_error = "folder not found";
         }
-		
-        char *t_folder_path;
-        t_folder_path = NULL;
-        if (t_error == NULL)
+
+
+        // SN-2014-07-30: [[ Bug 13026 ]] If the engine was asked, the folder path is directly set
+        if (t_error == NULL && t_folder_path == NULL)
         {
             t_folder_path = MCS_fsref_to_path(t_folder_ref);
             if (t_folder_path == NULL)
                 t_error = "folder not found";
         }
-        
+
         if (t_error == NULL)
             p_context . copysvalue(t_folder_path, strlen(t_folder_path));
         else
@@ -5526,7 +5540,7 @@ struct MCMacDesktop: public MCSystemInterface, public MCMacSystemService
             p_context . clear();
             MCresult -> sets(t_error);
         }
-        
+
         delete t_folder_path;
 #endif /* MCS_getspecialfolder_dsk_mac */
         uint32_t t_mac_folder = 0;
@@ -5669,7 +5683,7 @@ struct MCMacDesktop: public MCSystemInterface, public MCMacSystemService
 #ifdef /* MCS_umask_dsk_mac */ LEGACY_SYSTEM
 	return 0;
 #endif /* MCS_umask_dsk_mac */
-        return 0;
+        return umask(p_mask);
     }
 	
 	// NOTE: 'GetTemporaryFileName' returns a standard (not native) path.
@@ -7978,7 +7992,8 @@ MCSystemInterface *MCDesktopCreateMacSystem(void)
  *****************************************************************************/
 
 
-static bool fetch_ae_as_fsref_list(char*& string, uint4& length)
+// SN-2014-10-07: [[ Bug 13587 ]] Using a MCList allows us to preserve unicode chars
+static bool fetch_ae_as_fsref_list(MCListRef &r_list)
 {
 	AEDescList docList; //get a list of alias records for the documents
 	long count;
@@ -7994,6 +8009,10 @@ static bool fetch_ae_as_fsref_list(char*& string, uint4& length)
 		Size rSize;      //returned size, atual size of the docName
 		long item;
 		// get a FSSpec record, starts from count==1
+        // SN-2014-10-07: [[ Bug 13587 ]] We store the paths in a list
+        MCAutoListRef t_list;
+        /* UNCHECKED */ MCListCreateMutable('\n', &t_list);
+        
 		for (item = 1; item <= count; item++)
 		{
 			if (AEGetNthPtr(&docList, item, typeFSRef, &rKeyword, &rType,
@@ -8003,20 +8022,14 @@ static bool fetch_ae_as_fsref_list(char*& string, uint4& length)
 				return false;
 			}
             
+            // SN-2014-10-07: [[ Bug 13587 ]] Append directly the string, instead of converting to a CString
             MCAutoStringRef t_fullpathname;
-			/* UNCHECKED */ MCS_mac_fsref_to_path(t_doc_fsref, &t_fullpathname);
-			uint2 newlength = MCStringGetLength(*t_fullpathname) + 1;
-			MCU_realloc(&string, length, length + newlength, 1);
-			if (length)
-				string[length - 1] = '\n';
-            char *t_fullpathname_cstring;
-            /* UNCHECKED */ MCStringConvertToCString(*t_fullpathname, t_fullpathname_cstring);
-			memcpy(&string[length], t_fullpathname_cstring, newlength);
-			length += newlength;
-            delete t_fullpathname_cstring;
+            if (MCS_mac_fsref_to_path(t_doc_fsref, &t_fullpathname))
+                MCListAppend(*t_list, *t_fullpathname);
 		}
-		string[length - 1] = '\0';
 		AEDisposeDesc(&docList);
+        
+        return MCListCopy(*t_list, r_list);
 	}
 	return true;
 }
