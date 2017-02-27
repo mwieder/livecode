@@ -404,12 +404,13 @@ void MCB_clearbreaks(MCObject *p_for_object)
 		}
     }
 	
+	// [[ MDW-2017-02-26: Decouple zeroing the number of breakpoints ]]
 	if (p_for_object == nil && MCbreakpoints != nil)
 	{
-		MCnbreakpoints = 0;
 		MCMemoryDestroy(MCbreakpoints);
 		MCbreakpoints = nil;
 	}
+	MCnbreakpoints = 0;
 }
 
 bool MCB_unparsebreaks(MCStringRef& r_value)
@@ -558,12 +559,13 @@ void MCB_clearwatches(void)
 		MCwatchedvars[i].Clear();
 	}
 
+	// [[ MDW-2017-02-26: Decouple zeroing the number of watched variables ]]
     if (MCwatchedvars != nil)
     {
-        MCnwatchedvars = 0;
         MCMemoryDestroy(MCwatchedvars);
         MCwatchedvars = nil;
     }
+  MCnwatchedvars = 0;
 }
 
 void MCB_parsewatches(MCExecContext& ctxt, MCStringRef p_input)
