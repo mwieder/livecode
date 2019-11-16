@@ -1505,13 +1505,14 @@ public:
 	// These attempt to convert the given value as specified. If conversion
 	// was successful then 'r_converted' is set to true, else 'false'. If
 	// an error occurs (such as out-of-memory), false is returned.
-	bool TryToConvertToBoolean(MCValueRef value, bool& r_converted, MCBooleanRef& r_boolean);
-	bool TryToConvertToString(MCValueRef value, bool& r_converted, MCStringRef& r_string);
-	bool TryToConvertToNumber(MCValueRef value, bool& r_converted, MCNumberRef& r_number);
-	bool TryToConvertToInteger(MCValueRef value, bool& r_converted, integer_t& r_integer);
+// 2019-11-15 MDW [[ feature_typed_variables ]] removed unused methods
+//	bool TryToConvertToBoolean(MCValueRef value, bool& r_converted, MCBooleanRef& r_boolean);
+//	bool TryToConvertToString(MCValueRef value, bool& r_converted, MCStringRef& r_string);
+//	bool TryToConvertToNumber(MCValueRef value, bool& r_converted, MCNumberRef& r_number);
+//	bool TryToConvertToInteger(MCValueRef value, bool& r_converted, integer_t& r_integer);
 	bool TryToConvertToUnsignedInteger(MCValueRef value, bool& r_converted, uinteger_t& r_integer);
 	bool TryToConvertToReal(MCValueRef value, bool& r_converted, real64_t& r_real);
-	bool TryToConvertToArray(MCValueRef value, bool& r_converted, MCArrayRef& r_array);
+//	bool TryToConvertToArray(MCValueRef value, bool& r_converted, MCArrayRef& r_array);
 	bool TryToConvertToLegacyPoint(MCValueRef value, bool& r_converted, MCPoint& r_point);
 	bool TryToConvertToLegacyRectangle(MCValueRef value, bool& r_converted, MCRectangle& r_rectangle);
 	bool TryToConvertToLegacyColor(MCValueRef value, bool& r_converted, MCColor& r_color);
